@@ -1,12 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Imports\UsersImport;
+use App\Imports\ImportUser;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+
 class UsersController extends Controller
 {
      // all users
@@ -54,16 +55,17 @@ class UsersController extends Controller
          return response()->json('The user successfully deleted');
      }
 
-     public function import() 
+     //excel part
+     
+     public function importView(Request $request)
      {
-        Excel::import(new UserImport, $request->file('file')->store('temp'));
-        return back();
+        return view('importFile');
      }
 
-     public function export() 
+     public function import(Request $request)
      {
-        // use Excel facade to export data, by passing in the UserExport class and the desired file name as arguments
-        return Excel::download(new UserExport, 'users.xlsx');
+        Excel::import(new ImportUser, $request->file('file')->store('files'));
+        return redirect()->back();
      }
 
 }

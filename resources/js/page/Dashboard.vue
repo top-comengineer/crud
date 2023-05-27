@@ -3,21 +3,23 @@
     <div class="row">
       <div class="col-12">
         <div class="card shadow-sm">
-          <div class="card-header" style="display:flex; justify-content: space-between; ">
+          <div class="card-header" style="display:flex; justify-content: space-between; background-color: darkgrey;">
             <h3>User Panel</h3>
-            <div>
-              <a href="#" class="btn btn-primary" @click="importCSV()">Import</a> &nbsp;
+            <div style="display:flex; align-items: center;">
+              <!-- <a href="#" class="btn btn-primary custom-file-input" @click="importCSV()">Import</a> &nbsp; -->
+              <input type="file" ref="file" class="custom-file-input" @change="importCSV()">
               <a href="#" class="btn btn-secondary" @click="exportCSV()">Export</a>
             </div>
           </div>
           <div class="card-body">
             <div class="row">
-              <table class="table table-bordered">
+              <table class="table table-bordered table-hover">
                 <thead>
                   <tr>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
                     <th scope="col">Email</th>
+                    <th scope="col">Created</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
@@ -26,6 +28,7 @@
                     <td scope="row">{{ index + 1 }}</td>
                     <td>{{ user.name }}</td>
                     <td>{{ user.email }}</td>
+                    <td>{{ user.created_at }}</td>
                     <td><a href="#" class="btn btn-warning"
                         @click="get_user(user.id, user.name, user.email)">Edit</a>&nbsp;
                       <a href="#" class="btn btn-danger" @click="delete_user(user.id)">Delete</a>
@@ -42,15 +45,14 @@
                     <input type="text" name=" name" class="form-control" id="exampleInputEmail1"
                       aria-describedby="emailHelp" placeholder="Enter Username" v-model="upd_user.name">
                   </div>
-                  <div class="form-group">
+                  <div class="form-group mb-2">
                     <label for="email">Enter Email</label>
                     <input type="email" name=" email" class="form-control" id="exampleInputEmail1"
                       aria-describedby="emailHelp" placeholder="Enter Email" v-model="upd_user.email">
                     <input type="hidden" name="id" v-model="upd_user.id">
                   </div>
-
-
-                  <button type="submit" class="btn btn-primary">Update</button>
+                  <button type="submit" class="btn btn-primary">Update</button>&nbsp;
+                  <button class="btn btn-danger" v-on:click="this.edituser = false;">Cancel</button>
                 </form>
               </div>
             </div>
@@ -64,6 +66,8 @@
 <script>
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios'
+import { saveExcel } from '@progress/kendo-vue-excel-export';
+import * as XLSX from 'xlsx';
 export default {
   name: "dashboard",
   mounted() {
@@ -91,13 +95,31 @@ export default {
     }
   },
   methods: {
-
     importCSV() {
-
+      const file = this.$refs.file.files[0];
+      const reader = new FileReader();
+      reader.onload = e => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        this.users = XLSX.utils.sheet_to_json(worksheet);
+        console.log(XLSX.utils.sheet_to_json(worksheet));
+      };
+      reader.readAsArrayBuffer(file);
     },
 
     exportCSV() {
-
+      saveExcel({
+        data: this.users,
+        fileName: "users",
+        columns: [
+          { field: "id", title: "id" },
+          { field: 'name', title: 'name' },
+          { field: 'email', title: 'email' },
+          { field: 'created_at', title: 'created_at' }
+        ]
+      });
     },
 
     //getting all users 
@@ -165,3 +187,42 @@ export default {
   },
 }
 </script>
+
+<style>
+.custom-file-input {
+  width: 70px;
+  color: transparent;
+}
+
+.custom-file-input::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+.custom-file-input::before {
+  content: 'Import';
+  color: black;
+  display: inline-block;
+  background: -webkit-linear-gradient(top, #f9f9f9, #e3e3e3);
+  border: 1px solid #999;
+  border-radius: 8px;
+  padding: 7px 8px;
+  outline: none;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 10pt;
+}
+
+.custom-file-input:hover::before {
+  border-color: black;
+}
+
+.custom-file-input:active {
+  outline: 0;
+}
+
+.custom-file-input:active::before {
+  background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+}
+</style>

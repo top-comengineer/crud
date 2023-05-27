@@ -24,6 +24,7 @@ Route::group(['prefix' => 'users', 'middleware' => 'auth:sanctum'], function () 
     Route::get('edit/{id}', [UsersController::class, 'edit']);
     Route::post('update/{id}', [UsersController::class, 'update']);
     Route::delete('delete/{id}', [UsersController::class, 'delete']);
-    Route::post('/import', [UsersController::class, 'import']); // import route
-    Route::get('/export', [UsersController::class, 'export']); // export route
+    Route::get('/file-import',[UserController::class,'importView'])->name('import-view');
+    Route::post('/import',[UserController::class,'import'])->name('import');
+    Route::get('/export-users',[UserController::class,'exportUsers'])->name('export-users');
 });

@@ -20,12 +20,14 @@
   },
   "dependencies": {
     "@mdi/font": "^7.2.96",
+    "@progress/kendo-vue-excel-export": "^3.10.2",
     "vite-plugin-vuetify": "^1.0.2",
     "vue-axios": "^3.5.2",
     "vue-router": "^4.2.1",
     "vuetable-2": "^2.0.0-beta.4",
     "vuetify": "^3.3.1",
     "vuex": "^4.1.0",
-    "vuex-persistedstate": "^4.1.0"
+    "vuex-persistedstate": "^4.1.0",
+    "xlsx": "^0.18.5"
   }
 }
