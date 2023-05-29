@@ -78,8 +78,6 @@ export default {
     return {
       user: this.$store.state.auth.user,
       users: [],      //user array
-      index: 1,
-      posts: [],
       edituser: false,
       adduser: true,
       form: {
